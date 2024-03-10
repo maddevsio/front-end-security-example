@@ -4,7 +4,6 @@ const cors = require('cors');
 const csurf = require('csurf');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
-const expressJwt = require('express-jwt');
 
 const app = express();
 
@@ -12,23 +11,26 @@ const mockData = [
   { id: 1, data: 'Sample Data 1' },
 ];
 
-const SECRET_KEY = 'your_secret_key_here';
+const SECRET_KEY = 'your_secret_key_should_be_in_env';
 
-// Middleware
-app.use(express.json()); // For parsing application/json
+// ** Middleware **
+// For parsing application/json
+app.use(express.json());
 app.use(express.static('dist'));
+// Setup CORS
 app.use(cors({
   origin: 'http://localhost:8080', // Your front-end domain + domains you rely on
   optionsSuccessStatus: 200,
   credentials: true,
 }));
+// Initialize cookie-parser (needed for csurf token creation)
 app.use(cookieParser());
-app.use(csurf({ cookie: true }));
+// Setup CSP
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      // Define other CSP policies as needed
+      // TODO Define other CSP policies as needed
     },
   },
 }));
@@ -40,23 +42,38 @@ const cookieConfig = {
   sameSite: 'strict',
 };
 
-// CSRF protection middleware
+// Setup CSRF protection
+const csrfProtection = csurf({ cookie: true });
 app.use((req, res, next) => {
-  const csrfToken = req.csrfToken();
-  res.cookie('XSRF-TOKEN', csrfToken, cookieConfig);
-  next();
+  // Bypass CSRF protection on /api/login
+  if (req.path === '/api/login') next();
+
+  // Apply CSRF protection to all other routes
+  else {
+    csrfProtection(req, res, (err) => {
+      if (err) next(err);
+      else {
+        // Only set the CSRF token cookie if CSRF protection did not send a response
+        const csrfToken = req.csrfToken();
+        res.cookie('XSRF-TOKEN', csrfToken, cookieConfig);
+        next();
+      }
+    });
+  }
 });
 
-// JWT Middleware
-app.use(expressJwt.expressjwt({ secret: SECRET_KEY, algorithms: ['HS256'] }).unless({ path: ['/api/login', '/api/register'] }));
+const auth = async (req, res, next) => {
+  const token = req.header('Authorization')?.replace('Bearer ', '');
 
-// Authentication and Authorization Middleware
-const checkRole = role => (req, res, next) => {
-  if (req.user.role === role) {
-    next();
-  } else {
-    res.status(403).send('Forbidden');
-  }
+  if (!token) res.status(401).send('Please authenticate');
+
+  const decoded = jwt.verify(token, SECRET_KEY);
+  req.token = decoded;
+
+  // Naive role check. Should be managed separately, more robustly
+  if (decoded.role !== 'admin') res.status(403).send('Forbidden');
+
+  next();
 };
 
 // Authentication Route
@@ -80,17 +97,17 @@ app.post('/api/login', (req, res) => {
 });
 
 // CRUD Operations with Authorization
-app.get('/api/data', checkRole('admin'), (req, res) => {
+app.get('/api/data', auth, (req, res) => {
   res.json(mockData);
 });
 
-app.post('/api/data', checkRole('admin'), (req, res) => {
+app.post('/api/data', auth, (req, res) => {
   const newData = { id: mockData.length + 1, data: req.body.data };
   mockData.push(newData);
   res.status(201).json(newData);
 });
 
-app.delete('/api/data/:id', checkRole('admin'), (req, res) => {
+app.delete('/api/data/:id', auth, (req, res) => {
   const { id } = req.params;
   const index = mockData.findIndex(item => item.id === parseInt(id, 10));
   if (index >= 0) {
