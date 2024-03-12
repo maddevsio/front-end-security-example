@@ -10,12 +10,15 @@ function Login() {
   const handleLogin = async () => {
     try {
       const response = await axios.post('/api/login', { username, password });
-      localStorage.setItem('token', response.data.token);
+      const { authToken } = response.data;
+      if (!authToken) return;
+
+      localStorage.setItem('authToken', authToken);
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
       alert(error.message);
-      localStorage.removeItem('token');
+      localStorage.removeItem('authToken');
     }
   };
 

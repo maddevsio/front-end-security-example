@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { body } = require('express-validator');
+const { authSecretKey } = require('./configs');
 
 // This checks might be at FE as well
 // Usually, FE should prevent incorrect data from being sent and BE should cautiously double-check the data
@@ -18,8 +19,6 @@ const checkPassword = body('password')
 const escapeHTML = body('data').not().isEmpty().trim()
   .escape();
 
-// TODO
-const SECRET_KEY = 'your_secret_key_should_be_in_env';
 const checkAuth = async (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -29,7 +28,7 @@ const checkAuth = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
+    const decoded = jwt.verify(token, authSecretKey);
     req.token = decoded;
 
     // Naive role check. Should be managed separately, more robustly
@@ -37,7 +36,7 @@ const checkAuth = async (req, res, next) => {
 
     next();
   } catch (err) {
-    res.status(401).send(err);
+    res.status(401).send('Invalid token');
   }
 };
 
