@@ -1,17 +1,17 @@
 {
-  "name": "simple-react-full-stack",
+  "name": "front-end-security-example",
   "version": "1.0.0",
-  "description": "Boilerplate to build a full stack web application using React, Node.js, Express and Webpack.",
+  "description": "Project demonstrates how to implement main web security principles at Front-end. Built upon boilerplate for a full stack web app (React, Node.js, Express and Webpack)",
   "main": "src/server/index.js",
   "scripts": {
     "build": "webpack --mode production",
     "start": "npm run build && node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "nodemon src/server/index.js",
+    "server": "nodemon -r dotenv/config src/server/index.js",
     "dev": "npm run client",
     "dev-server": "npm run server"
   },
-  "author": "Sandeep Raveesh",
+  "author": "Mad Devs",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.6.7",
@@ -40,6 +40,7 @@
     "clean-webpack-plugin": "^1.0.0",
     "concurrently": "^4.0.0",
     "css-loader": "^2.0.0",
+    "dotenv": "^16.4.5",
     "eslint": "^5.0.0",
     "eslint-config-airbnb": "^17.0.0",
     "eslint-plugin-import": "^2.11.0",
