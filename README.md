@@ -19,6 +19,7 @@ This is a simple full stack [React](https://reactjs.org/) application with a [No
 - Run:
 ```bash
 npm install
+npm run dev-server
 npm run dev
 ```
 

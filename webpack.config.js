@@ -33,11 +33,13 @@ module.exports = {
   },
   devServer: {
     port: 3000,
-    open: true,
+    open: false,
     historyApiFallback: true,
     proxy: {
       '/api': 'http://localhost:8080'
-    }
+    },
+    // NOTICE: without valid TLS certificate https server will not be considered safe by browsers
+    https: true,
   },
   plugins: [
     new CleanWebpackPlugin([outputDirectory]),
