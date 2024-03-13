@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const outputDirectory = 'dist';
 
@@ -24,7 +24,10 @@ module.exports = {
     },
     {
       test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-      loader: 'url-loader?limit=100000'
+      loader: 'url-loader',
+      options: {
+        limit: 100000
+      }
     }
     ]
   },
@@ -33,16 +36,19 @@ module.exports = {
   },
   devServer: {
     port: 3000,
+    // NOTICE: without valid TLS certificate https server will not be considered safe by browsers
+    server: 'https',
     open: false,
     historyApiFallback: true,
-    proxy: {
-      '/api': 'http://localhost:8080'
-    },
-    // NOTICE: without valid TLS certificate https server will not be considered safe by browsers
-    https: true,
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:8080',
+      },
+    ],
   },
   plugins: [
-    new CleanWebpackPlugin([outputDirectory]),
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: './public/index.html',
     })

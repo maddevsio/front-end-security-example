@@ -22,7 +22,8 @@ const cspConfig = {
       fontSrc: ['self', 'example.com'],
       mediaSrc: ['self'], // Audio and video
       connectSrc: ['self'], // Sources for network connections
-      objectSrc: ['none'], // Sources for objects (such as Flash and Java applets)
+      objectSrc: ['none'], // Sources for objects (such as Flash and Java applets),
+      frameAncestors: ['none'], // Disable use in iframe. Prevent clickjacking
     },
   },
 };
