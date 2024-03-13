@@ -33,12 +33,12 @@ const useAxios = () => {
         navigate('/login', { replace: true });
         return null;
       }
+      // eslint-disable-next-line no-param-reassign
       config.headers.Authorization = `Bearer ${authToken}`;
       return config;
     },
-    error => Promise.reject(error)
+    error => Promise.reject(error),
   );
-
 
   baseAxios.interceptors.response.use(
     response => response,
@@ -52,6 +52,7 @@ const useAxios = () => {
           }
 
           // Retry the original request with the new token
+          // eslint-disable-next-line no-param-reassign
           errorAxiosInstance.config.headers.Authorization = `Bearer ${newAuthToken}`;
           localStorage.setItem('authToken', newAuthToken);
           return axios(errorAxiosInstance.config);
@@ -59,7 +60,7 @@ const useAxios = () => {
       }
       // For other errors, reject the promise
       return Promise.reject(errorAxiosInstance);
-    }
+    },
   );
 
   return baseAxios;

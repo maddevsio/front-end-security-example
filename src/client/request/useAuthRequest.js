@@ -10,11 +10,12 @@ const useAuthRequest = () => {
     } catch (err) {
       console.error('Request failed:', err);
       alert(err.message);
+      throw err;
     }
   };
 
   const postRequest = async (endpoint, payload) => {
-    if (!payload) return new Error('Invalid data');
+    if (!payload) throw new Error('Invalid data');
 
     // Use DOMPurify to sanitize user's input at FE
     const purifiedPayload = DOMPurify.sanitize(payload);
@@ -24,6 +25,7 @@ const useAuthRequest = () => {
     } catch (err) {
       console.error('POST request failed:', err);
       alert(err.message);
+      throw err;
     }
   };
 

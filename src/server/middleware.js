@@ -19,7 +19,6 @@ const connectMiddleware = (app) => {
   // Setup CSP
   app.use(helmet(cspConfig));
 
-
   // Setup CSRF protection. Get CSRF token from cookies
   const csrfProtection = csurf({ cookie: true, value: req => req.cookies['XSRF-TOKEN'] });
   app.use((req, res, next) => {

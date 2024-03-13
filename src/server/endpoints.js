@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const { checkAuth, checkPassword, escapeHTML } = require('./validators');
 const {
-  cookieConfig, authSecretKey, refreshSecretKey, authTokenLifetime, refreshTokenLifetime
+  cookieConfig, authSecretKey, refreshSecretKey, authTokenLifetime, refreshTokenLifetime,
 } = require('./configs');
 
 // Imitation of a database data. Normally you would store it in a table, use hashing for passwords
@@ -37,10 +37,9 @@ const connectEndpoints = (app) => {
     if (fetchedUser) {
       const { authToken, refreshToken } = generateJWT(fetchedUser.username, fetchedUser.role);
       res.cookie('REFRESH-TOKEN', refreshToken, cookieConfig);
-      res.json({ authToken });
-    } else {
-      res.status(400).send('Username or password is wrong');
+      return res.json({ authToken });
     }
+    return res.status(400).send('Username or password is wrong');
   });
 
   app.post('/api/refresh', (req, res) => {
@@ -61,9 +60,9 @@ const connectEndpoints = (app) => {
       const { authToken, refreshToken: newRefreshToken } = generateJWT(decodedToken.sub, decodedToken.role);
 
       res.cookie('REFRESH-TOKEN', newRefreshToken, cookieConfig);
-      res.json({ authToken });
+      return res.json({ authToken });
     } catch (err) {
-      res.status(401).send('Invalid token');
+      return res.status(401).send('Invalid token');
     }
   });
 
@@ -82,7 +81,7 @@ const connectEndpoints = (app) => {
     // Proceed with your logic if validation passed
     const newData = { id: petsDataMock.length + 1, data: req.body.data };
     petsDataMock.push(newData);
-    res.status(201).json(newData);
+    return res.status(201).json(newData);
   });
 
   app.delete('/api/data/:id', checkAuth, (req, res) => {

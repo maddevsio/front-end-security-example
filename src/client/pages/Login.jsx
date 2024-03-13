@@ -26,7 +26,7 @@ function Login() {
     <div>
       <input type="text" value={username} onChange={e => setUsername(e.target.value)} placeholder="Username" />
       <input type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder="Password" />
-      <button onClick={handleLogin}>Login</button>
+      <button type="button" onClick={handleLogin}>Login</button>
     </div>
   );
 }
