@@ -1,5 +1,6 @@
 import DOMPurify from 'dompurify';
 import useAxios from './baseAxios';
+import { getEncrypted } from './getEncrypted';
 
 const useAuthRequest = () => {
   const baseAxios = useAxios();
@@ -21,7 +22,7 @@ const useAuthRequest = () => {
     const purifiedPayload = DOMPurify.sanitize(payload);
 
     try {
-      return await baseAxios.post(endpoint, { data: purifiedPayload });
+      return await baseAxios.post(endpoint, { data: getEncrypted(purifiedPayload) });
     } catch (err) {
       console.error('POST request failed:', err);
       alert(err.message);

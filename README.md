@@ -28,3 +28,10 @@ credentials for entering the app:
 username: 'administrator', 
 password: 'Admin!123'
 ```
+
+[//]: # (TODO:)
+- file uploading, especially XML, ZIP and CSV.
+- Scrutinize redirects and ads.
+- encrypt user data before sending to server
+- set integrity and crossorigin attributes to script and link tags.
+- Hide your web server version

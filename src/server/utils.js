@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { body } = require('express-validator');
+const CryptoJS = require('crypto-js');
 const { authSecretKey } = require('./configs');
 
 // This checks might be at FE as well
@@ -40,4 +41,8 @@ const checkAuth = async (req, res, next) => {
   }
 };
 
-module.exports = { checkAuth, checkPassword, escapeHTML };
+const decrypt = (encryptedData) => CryptoJS.AES.decrypt(encryptedData, process.env.ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+
+module.exports = {
+  checkAuth, checkPassword, escapeHTML, decrypt,
+};

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { checkAuth, checkPassword, escapeHTML } = require('./validators');
+const { checkAuth, checkPassword, escapeHTML } = require('./utils');
 const {
   cookieConfig, authSecretKey, refreshSecretKey, authTokenLifetime, refreshTokenLifetime,
 } = require('./configs');
