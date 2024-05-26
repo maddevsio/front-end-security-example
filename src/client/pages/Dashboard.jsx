@@ -15,7 +15,9 @@ function Dashboard() {
 
   const addNewItem = async () => {
     const response = await postRequest('/api/data', { data: newItem });
+    if (!response.data) return;
     setData(response.data);
+    setNewItem('');
     await fetchData();
   };
 
