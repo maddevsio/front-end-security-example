@@ -2,43 +2,27 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const useAxios = () => {
-  const baseAxios = axios.create();
+  const baseAxios = axios.create({
+    withCredentials: true,
+  });
   const navigate = useNavigate();
 
   async function refreshAuthToken() {
     try {
       const response = await axios.post('/api/refresh');
       if (response.status === 200 && response.data.authToken) {
-        localStorage.setItem('authToken', response.data.authToken);
         return response.data.authToken;
       }
 
       // Failed to refresh
-      localStorage.removeItem('authToken');
       navigate('/login', { replace: true });
       return null;
     } catch (error) {
       console.error('Error while refreshing token:', error);
-      localStorage.removeItem('authToken');
       navigate('/login', { replace: true });
       return null;
     }
   }
-
-  baseAxios.interceptors.request.use(
-    (config) => {
-      const authToken = localStorage.getItem('authToken');
-      if (!authToken) {
-        console.error('No token available');
-        navigate('/login', { replace: true });
-        return null;
-      }
-      // eslint-disable-next-line no-param-reassign
-      config.headers.Authorization = `Bearer ${authToken}`;
-      return config;
-    },
-    error => Promise.reject(error),
-  );
 
   baseAxios.interceptors.response.use(
     response => response,
@@ -52,9 +36,6 @@ const useAxios = () => {
           }
 
           // Retry the original request with the new token
-          // eslint-disable-next-line no-param-reassign
-          errorAxiosInstance.config.headers.Authorization = `Bearer ${newAuthToken}`;
-          localStorage.setItem('authToken', newAuthToken);
           return axios(errorAxiosInstance.config);
         });
       }

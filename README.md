@@ -8,7 +8,7 @@
 
 This project demonstrates how to implement main web security principles at Front-end
 
-We used [simple-react-full-stack](https://github.com/crsandeep/simple-react-full-stack) boilerplate as a basis for the app. Great thanks to the authors.
+We used [simple-react-full-stack](https://github.com/crsandeep/simple-react-full-stack) boilerplate as a basis for the app. Great props to the authors.
 
 The app uses React, Node.js, Express and Webpack. It is also configured with webpack-dev-server, eslint, prettier and babel.
 
@@ -29,9 +29,5 @@ username: 'administrator',
 password: 'Admin!123'
 ```
 
-[//]: # (TODO:)
+# To be added:
 - file uploading, especially XML, ZIP and CSV.
-- Scrutinize redirects and ads.
-- encrypt user data before sending to server
-- set integrity and crossorigin attributes to script and link tags.
-- Hide your web server version

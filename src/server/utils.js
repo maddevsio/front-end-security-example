@@ -21,7 +21,8 @@ const escapeHTML = body('data').not().isEmpty().trim()
   .escape();
 
 const checkAuth = async (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
+  // Extract auth token from cookies
+  const token = req.cookies['AUTH-TOKEN'];
 
   if (!token) {
     res.status(401).send('Please authenticate');
@@ -41,7 +42,10 @@ const checkAuth = async (req, res, next) => {
   }
 };
 
-const decrypt = (encryptedData) => CryptoJS.AES.decrypt(encryptedData, process.env.ENCRYPTION_KEY).toString(CryptoJS.enc.Utf8);
+const decrypt = (encryptedData) => {
+  const key = process.env.VITE_ENCRYPTION_KEY;
+  return CryptoJS.AES.decrypt(encryptedData, `${key}`).toString(CryptoJS.enc.Utf8);
+};
 
 module.exports = {
   checkAuth, checkPassword, escapeHTML, decrypt,

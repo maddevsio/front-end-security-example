@@ -1,11 +1,13 @@
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const { checkAuth, checkPassword, escapeHTML } = require('./utils');
+const {
+  checkAuth, checkPassword, escapeHTML, decrypt,
+} = require('./utils');
 const {
   cookieConfig, authSecretKey, refreshSecretKey, authTokenLifetime, refreshTokenLifetime,
 } = require('./configs');
 
-// Imitation of a database data. Normally you would store it in a table, use hashing for passwords
+// Imitation of a database data. Normally you would store it in a table. Use advanced hashing for passwords
 const usersMock = [{ username: 'administrator', password: 'Admin!123', role: 'admin' }];
 const petsDataMock = [{ id: 1, data: 'Cat' }];
 
@@ -36,8 +38,9 @@ const connectEndpoints = (app) => {
 
     if (fetchedUser) {
       const { authToken, refreshToken } = generateJWT(fetchedUser.username, fetchedUser.role);
+      res.cookie('AUTH-TOKEN', authToken, cookieConfig);
       res.cookie('REFRESH-TOKEN', refreshToken, cookieConfig);
-      return res.json({ authToken });
+      return res.status(200).send('Success');
     }
     return res.status(400).send('Username or password is wrong');
   });
@@ -66,7 +69,7 @@ const connectEndpoints = (app) => {
     }
   });
 
-  // CRUD Operations with Authorization
+  // CRUD Operations with Dashboard data
   app.get('/api/data', checkAuth, (req, res) => {
     res.json(petsDataMock);
   });
@@ -79,7 +82,7 @@ const connectEndpoints = (app) => {
     }
 
     // Proceed with your logic if validation passed
-    const newData = { id: petsDataMock.length + 1, data: req.body.data };
+    const newData = { id: petsDataMock.length + 1, data: decrypt(req.body.data) };
     petsDataMock.push(newData);
     return res.status(201).json(newData);
   });
