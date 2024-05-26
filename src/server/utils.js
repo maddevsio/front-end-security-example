@@ -8,20 +8,23 @@ const { authSecretKey } = require('./configs');
 function checkPassword(password) {
   const errors = [];
 
-  if (password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
-  }
-  if (!/\d/.test(password)) {
-    errors.push('Password must contain a number');
-  }
-  if (!/[A-Z]/.test(password)) {
-    errors.push('Password must contain an uppercase letter');
-  }
-  if (!/[a-z]/.test(password)) {
-    errors.push('Password must contain a lowercase letter');
-  }
-  if (!/[@$!%*?&]/.test(password)) {
-    errors.push('Password must contain a special character');
+  switch (true) {
+    case password.length < 8:
+      errors.push('Password must be at least 8 characters long');
+      break;
+    case !/\d/.test(password):
+      errors.push('Password must contain a number');
+      break;
+    case !/[A-Z]/.test(password):
+      errors.push('Password must contain an uppercase letter');
+      break;
+    case !/[a-z]/.test(password):
+      errors.push('Password must contain a lowercase letter');
+      break;
+    case !/[@$!%*?&]/.test(password):
+      errors.push('Password must contain a special character');
+      break;
+    default:
   }
 
   return errors;
