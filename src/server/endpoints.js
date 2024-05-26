@@ -87,7 +87,9 @@ const connectEndpoints = (app) => {
     }
 
     // Proceed with your logic if validation passed
-    const newData = { id: petsDataMock.length + 1, data: decrypt(req.body.data) };
+
+    const decryptedData = decrypt(req.body.data);
+    const newData = { id: petsDataMock.length + 1, data: decryptedData ? JSON.parse(decryptedData).data : decryptedData };
     petsDataMock.push(newData);
     return res.status(201).json(newData);
   });
