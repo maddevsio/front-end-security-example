@@ -5,16 +5,27 @@ const { authSecretKey } = require('./configs');
 
 // This checks might be at FE as well
 // Usually, FE should prevent incorrect data from being sent and BE should cautiously double-check the data
-const checkPassword = body('password')
-  .isLength({ min: 8 }).withMessage('Password must be at least 8 characters long')
-  .matches(/\d/)
-  .withMessage('Password must contain a number')
-  .matches(/[A-Z]/)
-  .withMessage('Password must contain an uppercase letter')
-  .matches(/[a-z]/)
-  .withMessage('Password must contain a lowercase letter')
-  .matches(/[@$!%*?&]/)
-  .withMessage('Password must contain a special character');
+function checkPassword(password) {
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push('Password must be at least 8 characters long');
+  }
+  if (!/\d/.test(password)) {
+    errors.push('Password must contain a number');
+  }
+  if (!/[A-Z]/.test(password)) {
+    errors.push('Password must contain an uppercase letter');
+  }
+  if (!/[a-z]/.test(password)) {
+    errors.push('Password must contain a lowercase letter');
+  }
+  if (!/[@$!%*?&]/.test(password)) {
+    errors.push('Password must contain a special character');
+  }
+
+  return errors;
+}
 
 // Use express-validator to sanitize user's input at BE
 const escapeHTML = body('data').not().isEmpty().trim()

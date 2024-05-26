@@ -1,11 +1,11 @@
-import DOMPurify from 'dompurify';
 import useAxios from './baseAxios';
-import { getEncrypted } from './getEncrypted';
+import { getEncrypted, sanitizePayload } from './helpers';
 
 const useAuthRequest = () => {
   const baseAxios = useAxios();
 
-  const makeRequest = async (endpoint, method) => {
+  // reusable function that executes a required request without any checks
+  const makeGenericRequest = async (endpoint, method) => {
     try {
       return await baseAxios[method](endpoint);
     } catch (err) {
@@ -15,14 +15,15 @@ const useAuthRequest = () => {
     }
   };
 
+  // reusable function that sanitizes and encrypts user input before submitting POST request to the server
   const postRequest = async (endpoint, payload) => {
     if (!payload) throw new Error('Invalid data');
 
     // Use DOMPurify to sanitize user's input at FE
-    const purifiedPayload = DOMPurify.sanitize(payload);
+    const sanitizedPayload = sanitizePayload(payload);
 
     try {
-      return await baseAxios.post(endpoint, { data: getEncrypted(purifiedPayload) });
+      return await baseAxios.post(endpoint, { data: getEncrypted(JSON.stringify(sanitizedPayload)) });
     } catch (err) {
       console.error('POST request failed:', err);
       alert(err.message);
@@ -30,7 +31,7 @@ const useAuthRequest = () => {
     }
   };
 
-  return { makeRequest, postRequest };
+  return { makeGenericRequest, postRequest };
 };
 
 export default useAuthRequest;

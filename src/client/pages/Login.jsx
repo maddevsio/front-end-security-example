@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import useAuthRequest from '../request/useAuthRequest';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { postRequest } = useAuthRequest();
 
   const handleLogin = async () => {
     try {
-      const response = await axios.post('/api/login', { username, password });
+      const response = await postRequest('/api/login', { username, password });
       if (response.status !== 200) throw new Error();
       navigate('/dashboard');
     } catch (error) {

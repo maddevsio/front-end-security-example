@@ -13,7 +13,7 @@ const connectMiddleware = (app) => {
   // Setup CORS
   app.use(cors(corsConfig));
 
-  // Initialize cookie-parser (needed for csurf token creation)
+  // Initialize cookie-parser (needed for csrf token creation)
   app.use(cookieParser());
 
   // Setup CSP

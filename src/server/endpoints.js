@@ -21,16 +21,21 @@ const generateJWT = (sub, role) => {
 };
 
 const connectEndpoints = (app) => {
-  app.post('/api/login', checkPassword, (req, res) => {
+  app.post('/api/login', (req, res) => {
     const errors = validationResult(req);
     // If there are validation errors, return 400
     if (!errors.isEmpty()) {
       return res.status(400).json(errors);
     }
 
-    const { username, password } = req.body;
+    const decryptedPayload = decrypt(req.body.data);
+    const { username, password } = JSON.parse(decryptedPayload);
 
-    // Validate username and password
+    const passwordValidation = checkPassword(password);
+    if (passwordValidation.length) {
+      return res.status(400).json(passwordValidation.join(', '));
+    }
+
     // This is where you would validate the user's credentials against your database
 
     // Simplified validation
@@ -61,9 +66,9 @@ const connectEndpoints = (app) => {
       }
 
       const { authToken, refreshToken: newRefreshToken } = generateJWT(decodedToken.sub, decodedToken.role);
-
       res.cookie('REFRESH-TOKEN', newRefreshToken, cookieConfig);
-      return res.json({ authToken });
+      res.cookie('AUTH-TOKEN', authToken, cookieConfig);
+      return res.status(200).send('Success');
     } catch (err) {
       return res.status(401).send('Invalid token');
     }

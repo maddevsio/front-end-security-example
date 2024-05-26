@@ -6,17 +6,17 @@ function Dashboard() {
   const [newItem, setNewItem] = useState('');
   const [idToDelete, setIdToDelete] = useState();
 
-  const { makeRequest, postRequest } = useAuthRequest();
+  const { makeGenericRequest, postRequest } = useAuthRequest();
 
   const fetchData = async () => {
-    const response = await makeRequest('/api/data', 'get');
+    const response = await makeGenericRequest('/api/data', 'get');
     setData(response.data);
   };
 
   const addNewItem = async () => {
-    const response = await postRequest('/api/data', newItem);
+    const response = await postRequest('/api/data', { data: newItem });
     setData(response.data);
-    fetchData();
+    await fetchData();
   };
 
   const deleteItem = async () => {

@@ -5,7 +5,7 @@ const cookieConfig = {
 };
 
 const corsConfig = {
-  origin: 'http://localhost:8080', // Your front-end domain + domains you rely on
+  origin: JSON.parse(process.env.ALLOWED_ORIGINS) || 'https://localhost:3000', // Your front-end domain + domains you rely on
   optionsSuccessStatus: 200,
   credentials: true,
 };
